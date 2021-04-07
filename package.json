@@ -1,0 +1,15 @@
+{
+  "name": "internship-searcher",
+  "version": "1.0.0",
+  "description": "script qui recherchera mes stage",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "author": "lordpax",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "selenium-webdriver": "*"
+  }
+}
