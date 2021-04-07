@@ -24,3 +24,19 @@ FORM=form#loginform
 INPUT_EMAIL=__email
 INPUT_PASS=__password
 ```
+
+## Fichier config.json
+```json
+{
+    "optionView" : {
+        "title" : true,
+        "link" : true,
+        "company" : true,
+        "location" : true
+    },
+    "optionFilter" : {
+        "title" : ["stage", "développeur"],
+        "location" : ["paris"]
+    }
+}
+```
