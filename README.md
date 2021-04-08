@@ -25,7 +25,7 @@ INPUT_EMAIL=__email
 INPUT_PASS=__password
 ```
 
-## Fichier config.json
+## Fichier config.json (exemple)
 ```json
 {
     "optionView" : {
@@ -35,7 +35,11 @@ INPUT_PASS=__password
         "location" : true
     },
     "optionFilter" : {
-        "title" : ["stage", "développeur"],
+        "title" : [
+            "stage|internship|stagiaire",
+            "d(é|e)veloppe(ur|ment)",
+            "web|java|backend|fullstack|node|nodejs"
+        ],
         "location" : ["paris"]
     }
 }

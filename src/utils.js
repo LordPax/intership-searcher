@@ -9,7 +9,7 @@ require('dotenv').config()
 * @return Promise<WebElement[]>
 */
 const fetchAllOffer = async driver => {
-    console.log('fetching the offers ...')
+    console.log('Fetching the offers ...')
     const next = await driver.findElements(By.css('.pagination-list a'))
     const nextTxt = await Promise.all(next.map(e => e.getAttribute('href')))
     nextTxt.pop()
@@ -21,8 +21,10 @@ const fetchAllOffer = async driver => {
     for (let i = 0; i < nextTxt.length; i++) {
         console.log('Parsing page', i + 2, '...')
         await driver.get(nextTxt[i])
+
         driver.findElement(By.className('popover-x-button-close')).click()
-        .catch(err => console.log('Button not found'))
+        .then(() => console.log('Popup skiped'))
+        .catch(() => console.log('Popup not found'))
 
         elem = await driver.findElements(By.className('jobsearch-SerpJobCard'))
         elemAllTxt = [...elemAllTxt, ...await Promise.all(elem.map(e => parseElem(e)))]
@@ -59,53 +61,13 @@ const parseElem = async elem => ({
 /*
 * Verifi si un element existe
 * 
-* @param elem:WebElement
+* @param elem:Promise<WebElement>
 * @return Promise<boolean>
 */
 const ifExist = elem => new Promise((resolve, reject) => {
     elem.then(val => resolve(true))
     .catch(err => resolve(false))
 })
-
-/*
-* Prend des elements parser et les filtre avec des options
-* 
-* @param element:object[]
-* @param option?: {
-*    title?: regex
-*    link?: regex
-*    company?: regex
-*    location?: regex
-*    summary?: regex
-*    new?: boolean
-*    eazy?: boolean
-* }
-* @return Promise<object[]>
-*/
-const filterRegex = (element, option = {}) => {
-    const opt = {
-        title : option.title || /.*/,
-        link : option.link || /.*/,
-        company : option.company || /.*/,
-        location : option.location || /.*/,
-        summary : option.summary || /.*/,
-        new : option.new || undefined,
-        eazy : option.eazy || undefined
-    }
-    const filter = element.filter(elem => {
-        const res = opt.title.test(elem.title.toLowerCase()) && 
-        opt.link.test(elem.link.toLowerCase()) &&
-        opt.company.test(elem.company.toLowerCase()) &&
-        opt.location.test(elem.location.toLowerCase()) &&
-        opt.summary.test(elem.summary.toLowerCase()) &&
-        elem.new === opt.new || opt.new === undefined &&
-        elem.eazy === opt.eazy || opt.eazy === undefined
-
-        return res
-    })
-    console.log(filter.length, 'offers were filtered')
-    return filter
-}
 
 /*
 * Prend des elements parser et les filtre avec des options
@@ -178,6 +140,11 @@ const connect = async driver => {
     const form = await driver.findElement(By.css(FORM))
     await form.findElement(By.name(INPUT_EMAIL)).sendKeys(EMAIL)
     await form.findElement(By.name(INPUT_PASS)).sendKeys(PASSWORD, Key.ENTER)
+
+    if (await ifExist(driver.findElement(By.className('gnav-AccountMenu-user'))))
+        console.log('Connected to indeed')
+    else
+        console.log('Not connected to indeed')
 }
 
 /*
@@ -187,8 +154,11 @@ const connect = async driver => {
 * @param subject:string
 * @return boolean
 */
-const find = (search, subject) => search.length > 0 ?
-    search.map(s => subject.indexOf(s)).indexOf(-1) === -1 : true
+const find = (search, subject) => {
+    return search.length > 0 ? search.map(s =>
+        (new RegExp(s)).test(subject)
+    ).indexOf(false) === -1 : true
+}
 
 /*
 * Stringify les elements parser en fonction des options
@@ -295,7 +265,6 @@ const loadConfig = (fileName = 'config.json') => {
 
 module.exports = {
     fetchAllOffer,
-    filterRegex,
     filterKeyword,
     connect,
     ifExist,

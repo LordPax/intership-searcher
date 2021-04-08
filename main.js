@@ -8,7 +8,8 @@ const {
     toString,
     toLog,
     verbose,
-    loadConfig
+    loadConfig,
+    connect
 } = require('./src/utils')
 require('dotenv').config()
 
@@ -42,12 +43,9 @@ const main = async () => {
 
     // await connect(driver)
     await driver.get(OFFER_LINK);
-    
     const elemAll = await fetchAllOffer(driver)
     const filterElem = filterKeyword(elemAll, optionFilter)
-
     console.log(toString(filterElem, optionView))
-
     // await apply(filterElem[0], driver)
 
     if (argv.indexOf('-o') !== -1 && argv.length >= 4) {
